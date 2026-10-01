@@ -1,0 +1,105 @@
+======================================================================
+MODELAGEM DE RISCO DE CREDITO - RANDOM FOREST
+======================================================================
+
+[PARTE 1] Base sintetica gerada
+  Total de clientes : 2000
+  Variaveis (X)     : ['RendaMensal', 'ScoreCredito', 'EmprestimosAtivos']
+
+  Primeiras linhas da base:
+ RendaMensal  ScoreCredito  EmprestimosAtivos  Inadimplente
+ 3846.340450           519                  2             0
+16550.607155           462                  5             0
+ 8083.728468           519                  0             0
+ 6064.712769           569                  1             0
+ 2348.124352           931                  2             0
+
+[PARTE 1] Modelo base treinado
+  Acuracia OOB        : 0.9344
+  ROC-AUC (teste)     : 0.8566
+
+[PARTE 2] Importancia das variaveis (ordem decrescente):
+  RendaMensal         : 0.4121
+  ScoreCredito        : 0.3555
+  EmprestimosAtivos   : 0.2324
+
+[PARTE 3] Analise critica do desbalanceamento
+  Proporcao de inadimplentes (base completa): 0.0675 (6.8%)
+  Distribuicao de classes: {0: np.int64(1865), 1: np.int64(135)}
+
+  Matriz de Confusao (modelo base):
+    [[370, 3], [25, 2]]
+
+  Classification Report (modelo base):
+              precision    recall  f1-score   support
+
+           0     0.9367    0.9920    0.9635       373
+           1     0.4000    0.0741    0.1250        27
+
+    accuracy                         0.9300       400
+   macro avg     0.6684    0.5330    0.5443       400
+weighted avg     0.9005    0.9300    0.9069       400
+
+
+  >> Por que acuracia elevada pode ser enganosa com desbalanceamento?
+     Com ~93.2% da base na classe 0, um modelo que SEMPRE preve 'nao
+     inadimplente' ja atinge ~93.2% de acuracia sem detectar nenhum
+     inadimplente (recall da classe 1 = 0). A acuracia e dominada pela
+     classe majoritaria e mascara a incapacidade de identificar o
+     evento de interesse (classe 1). Por isso usamos precision, recall,
+     f1-score e ROC-AUC, que avaliam o desempenho por classe.
+
+[PARTE 4] Modelo balanceado (class_weight='balanced')
+  Acuracia OOB        : 0.8988
+  ROC-AUC (teste)     : 0.8623
+
+  Matriz de Confusao (modelo balanceado):
+    [[341, 32], [10, 17]]
+
+  Classification Report (modelo balanceado):
+              precision    recall  f1-score   support
+
+           0     0.9715    0.9142    0.9420       373
+           1     0.3469    0.6296    0.4474        27
+
+    accuracy                         0.8950       400
+   macro avg     0.6592    0.7719    0.6947       400
+weighted avg     0.9294    0.8950    0.9086       400
+
+
+[PARTE 4] Comparacao Modelo Base x Modelo Balanceado (classe 1)
+  Metrica                     Base    Balanceado
+  ----------------------------------------------
+  Precision (classe 1)      0.4000        0.3469
+  Recall (classe 1)         0.0741        0.6296
+  F1-score (classe 1)       0.1250        0.4474
+  ROC-AUC                   0.8566        0.8623
+
+[PARTE 4] Analise do trade-off (nao basta dizer qual e 'melhor'):
+  O class_weight='balanced' penaliza mais os erros na classe minoritaria
+  (inadimplentes). O efeito tipico e AUMENTAR o recall da classe 1
+  (detectar mais inadimplentes), ao custo de REDUZIR a precision da
+  classe 1 (mais falsos positivos: bons pagadores sinalizados como risco).
+  A escolha depende do custo de negocio: se deixar passar um inadimplente
+  (falso negativo) e mais caro que recusar credito a um bom pagador
+  (falso positivo), o modelo balanceado tende a ser preferivel; caso
+  contrario, o ganho em recall pode nao compensar a perda de precisao.
+
+======================================================================
+RESUMO FINAL
+======================================================================
+  Inadimplentes na base      : 6.8%
+  OOB base / balanceado      : 0.9344 / 0.8988
+  ROC-AUC base / balanceado  : 0.8566 / 0.8623
+  Recall cl.1 base/balanceado: 0.0741 / 0.6296
+  Precision cl.1 base/balanc.: 0.4000 / 0.3469
+  F1 cl.1 base / balanceado  : 0.1250 / 0.4474
+
+  Evidencias salvas em: evidencias/
+    - importancia_variaveis.png
+    - matriz_confusao_modelo_base.png
+    - matriz_confusao_modelo_balanceado.png
+    - comparacao_recall.png
+  Resultados salvos em: resultados/
+    - base_sintetica.csv
+    - resumo_resultados.txt

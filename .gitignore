@@ -1,0 +1,50 @@
+# ---------------------------------------------------------------------------
+# .gitignore - Projeto Python academico (Risco de Credito / Random Forest)
+# ---------------------------------------------------------------------------
+
+# Bytecode / cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+ENV/
+.virtualenv/
+
+# Distribuicao / empacotamento
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Jupyter / IPython
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Ferramentas de teste / cobertura
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Configuracoes de IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs e temporarios
+*.log
+*.tmp
+*.bak
